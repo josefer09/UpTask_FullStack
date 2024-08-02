@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import colors from 'colors';
 import { CustomError } from '../utils';
+import { corsConfig } from '../config/cors';
 
 type Options = {
     port: number;
@@ -23,11 +24,7 @@ export class Server {
 
     async start() {
         // Cors
-        const corsOptions = {
-            origin: "*",
-        };
-
-        this.app.use(cors(corsOptions));
+        this.app.use(cors(corsConfig));
 
         //* Middlewares
         this.app.use(express.json()); // Raw
