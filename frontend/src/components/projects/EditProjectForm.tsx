@@ -1,20 +1,22 @@
+import { Project, ProjectFormData } from "@/types/index";
+import ProjectForm from "./ProjectForm";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import ProjectForm from "@/components/projects/ProjectForm";
-import { ProjectFormData } from "@/types/index.ts";
-import { CreateProject } from "@/api/ProjectApi";
+import { UpdateProject } from "@/api/ProjectApi";
 import { toast } from "react-toastify";
 
-export default function CreateProjectView() {
-  const initialValues: ProjectFormData = {
-    projectName: "",
-    clientName: "",
-    description: "",
-  };
+type EditProjectFormProps = {
+  data: ProjectFormData;
+  projectId: Project["_id"];
+};
 
-  const navigate = useNavigate();
+export default function EditProjectForm({
+  data,
+  projectId,
+}: EditProjectFormProps) {
 
+    const navigate = useNavigate();
   /**
    * Register sirve para registrar cada input
    * handleSubmit se ejecuta para ver si pasamos la validacion
@@ -24,24 +26,34 @@ export default function CreateProjectView() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues: initialValues });
-
-  const { mutate } = useMutation({
-    mutationFn: CreateProject,
-    onSuccess: () => {
-      toast.success('Project Created Succefully');
-      navigate('/projects');
-    },
-    onError: () => {
-      toast.error('Failed to create Project');
+  } = useForm({
+    defaultValues: {
+      projectName: data.projectName,
+      clientName: data.clientName,
+      description: data.description,
     },
   });
 
-  const handleForm = (formData: ProjectFormData) => mutate(formData);
+  const { mutate } = useMutation({
+    mutationFn: UpdateProject,
+    onError: () => {
+        toast.error("Project Editing Failed");
+    },
+    onSuccess: (data) => {
+      toast.success(data.msg);
+      console.log(data);
+      navigate("/projects");
+    },
+  });
+
+  const handleForm = (formData: ProjectFormData) => {
+    mutate({ formData, projectId });
+  };
+
   return (
     <>
       <div className=" max-w-3xl mx-auto">
-        <h1 className="text-5xl font-black">My Projects</h1>
+        <h1 className="text-5xl font-black">Edit Project</h1>
         <p className=" text-2xl font-light text-gray-500 mt-5">
           Fill out the following form
         </p>
@@ -51,7 +63,7 @@ export default function CreateProjectView() {
             className=" bg-sky-400 hover:bg-sky-500 px-10 py-3 text-white text-xl font-bold cursor-pointer transition-colors"
             to={"/projects"}
           >
-            Return to menu
+            Return to projects
           </Link>
         </nav>
 
@@ -60,13 +72,10 @@ export default function CreateProjectView() {
           onSubmit={handleSubmit(handleForm)}
           noValidate
         >
-          <ProjectForm
-            register={register}
-            errors={errors}
-          />
+          <ProjectForm register={register} errors={errors} />
           <input
             type="submit"
-            value="Create Project"
+            value="Save Project"
             className=" bg-sky-600 hover:bg-sky-700 w-full p-3 text-white uppercase font-bold cursor-pointer transition-colors"
           />
         </form>
