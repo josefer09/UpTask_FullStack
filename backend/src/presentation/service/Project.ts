@@ -53,7 +53,6 @@ export class ProjectService {
             if (!project) throw CustomError.notFound(`Project with id: ${id} not found`);
             return {
                 msg: 'Project Updated',
-                project: body
             }
         } catch (error) {
             if( error instanceof CustomError ) throw error;

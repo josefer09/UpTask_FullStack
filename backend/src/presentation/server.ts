@@ -24,7 +24,9 @@ export class Server {
 
     async start() {
         // Cors
-        this.app.use(cors(corsConfig));
+        this.app.use(cors( {
+            origin: "*"
+        }));
 
         //* Middlewares
         this.app.use(express.json()); // Raw
