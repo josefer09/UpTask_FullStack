@@ -2,7 +2,7 @@ import { Project, ProjectFormData } from "@/types/index";
 import ProjectForm from "./ProjectForm";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UpdateProject } from "@/api/ProjectApi";
 import { toast } from "react-toastify";
 
@@ -34,12 +34,17 @@ export default function EditProjectForm({
     },
   });
 
+  const queryClient = useQueryClient();
+
   const { mutate } = useMutation({
     mutationFn: UpdateProject,
     onError: () => {
         toast.error("Project Editing Failed");
     },
     onSuccess: (data) => {
+      // Esta es la forma para invalidar la informacion cachada y volver a consultar
+      queryClient.invalidateQueries({ queryKey: ['projects']});
+      queryClient.invalidateQueries({ queryKey: ['editProject', projectId]});
       toast.success(data.msg);
       console.log(data);
       navigate("/projects");

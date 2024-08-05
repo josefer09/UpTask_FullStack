@@ -36,7 +36,6 @@ export class ProjectService {
         try {
             const project = await ProjectModel.findById(id).populate('tasks');
             if ( !project ) throw CustomError.notFound(`Project with id: ${id} not found`);
-            console.log({project});
             return project
         } catch (error) {
             if ( error instanceof CustomError ) {

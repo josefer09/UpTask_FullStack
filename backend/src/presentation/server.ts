@@ -4,6 +4,7 @@ import cors from 'cors';
 import colors from 'colors';
 import { CustomError } from '../utils';
 import { corsConfig } from '../config/cors';
+import morgan from 'morgan';
 
 type Options = {
     port: number;
@@ -29,6 +30,7 @@ export class Server {
         }));
 
         //* Middlewares
+        this.app.use(morgan('dev')); // Logs from API
         this.app.use(express.json()); // Raw
         this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
 
