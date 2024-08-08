@@ -5,7 +5,7 @@ import { TaskFormData } from "@/types/index";
 import { useForm } from "react-hook-form";
 import TaskForm from "./TaskForm";
 import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTask } from "@/api/TaskApi";
 
 export default function AddTaskModal() {
@@ -25,11 +25,14 @@ export default function AddTaskModal() {
   // Con register regristramos los campos del formulario a validar, con habldeSubmit, el metodo correspondiente, y con errors cachamos los errores
   const { register, handleSubmit, formState: {errors}, reset} = useForm({ defaultValues: initialValues });
 
+  const queryClient = useQueryClient();
+
   const { mutate } = useMutation({
     mutationFn: createTask,
     onSuccess: (data) => {
+      queryClient.invalidateQueries({queryKey: ['viewProject', projectId]})
       toast.success(data.msg);
-      reset;
+      reset();
       navigate(location.pathname, { replace: true });
     },
     onError: () => {
