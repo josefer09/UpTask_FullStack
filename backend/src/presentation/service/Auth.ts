@@ -4,6 +4,7 @@ import User from "../../model/User";
 import Token from "../../model/Token";
 import { AuthEmail } from "../email/AuthEmail";
 import { ValidateToken } from '../../domain/dtos/token/validateToken.dto';
+import { AuthUserDto } from "../../domain/dtos/auth/authUser.dto";
 
 
 
@@ -59,6 +60,36 @@ export class AuthService {
             return { msg: 'Account Confirmed Successfully'};
         } catch (error) {
             if( error instanceof CustomError) throw error;
+            console.log(error);
+            throw CustomError.internalServer('Server Error');
+        }
+    }
+
+    async authUser(authUserDto: AuthUserDto) {
+        try {
+            const user = await User.findOne({email: authUserDto.email});
+
+            if(!user) throw CustomError.notFound(`User with email: ${authUserDto.email} not found`);
+
+            // Validar si la cuenta esta confirmada
+            if( !user.confirmed ) throw CustomError.badRequest('Unconfirmed user, we have sent you a token to your email to confirm the acount');
+            // Send token
+            const token = new Token();
+            token.user = user.id;
+            token.token = generateToken();
+            await token.save();
+            // Send email
+            AuthEmail.sendConfirmationEmail({ email: user.email, name: user.name, token: token.token});
+
+            // Comparamos las contrasenas
+            const userPassMatch = BcryptAdapter.compare(authUserDto.password, user.password);
+            if( !userPassMatch ) throw CustomError.badRequest('Password incorrect');
+
+            return { msg: 'Succefull'};
+
+
+        } catch (error) {
+            if( error instanceof CustomError ) throw error;
             console.log(error);
             throw CustomError.internalServer('Server Error');
         }

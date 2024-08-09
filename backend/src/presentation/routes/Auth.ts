@@ -14,6 +14,7 @@ export class AuthRoutes {
 
         router.post('/create-count', controller.postCreateUser);
         router.post('/confirm-count', controller.postConfirmCount);
+        router.post('/login', controller.postLogin);
 
 
         return router;
