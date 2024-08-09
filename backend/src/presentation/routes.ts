@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ProjectRoutes } from "./routes/Project";
-import { AuthRoutes } from "./routes/AuthUser";
+import { AuthRoutes } from "./routes/Auth";
 
 
 
