@@ -1,5 +1,5 @@
-import { regularExps } from "../../utils/regular-exp";
-import { CreateProjectDto } from "../dtos/project/createProject.dto";
+import { regularExps } from "../../../utils/regular-exp";
+import { CreateProjectDto } from "../project/createProject.dto";
 
 export class CreateUserDto {
     constructor(

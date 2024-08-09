@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { CustomError } from "../../utils";
 import { AuthService } from '../service/Auth';
-import { CreateUserDto } from '../../domain/auth/createUser.dto';
+import { CreateUserDto } from '../../domain/dtos/auth/createUser.dto';
+import { ValidateToken } from '../../domain/dtos/token/validateToken.dto';
 
 
 export class AuthController {
@@ -26,8 +27,15 @@ export class AuthController {
         this.service.createAcount(createUserDto!)
         .then( response => res.json(response))
         .catch( error => this.handleError(error, res));
-        
+      }
 
+      postConfirmCount = (req: Request, res: Response) => {
+        const [error, validateToken] = ValidateToken.validate(req.body);
+        if( error ) return res.status(400).json({error});
+
+        this.service.confirmAcount(validateToken!)
+        .then( response => res.json(response))
+        .catch( error => this.handleError( error, res ));
       }
 
 }

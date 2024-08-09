@@ -13,6 +13,7 @@ export class AuthRoutes {
         const controller = new AuthController(service);
 
         router.post('/create-count', controller.postCreateUser);
+        router.post('/confirm-count', controller.postConfirmCount);
 
 
         return router;

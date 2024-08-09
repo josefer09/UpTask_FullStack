@@ -4,7 +4,7 @@ export interface IUser extends Document {
     email: string;
     password: string;
     name: string;
-    confirmed: string;
+    confirmed: boolean;
     userDiscord?: string;
 }
 
