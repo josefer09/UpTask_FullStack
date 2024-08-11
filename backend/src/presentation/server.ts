@@ -5,6 +5,7 @@ import colors from 'colors';
 import { CustomError } from '../utils';
 import { corsConfig } from '../config/cors';
 import morgan from 'morgan';
+import path from 'path';
 
 type Options = {
     port: number;
@@ -30,6 +31,8 @@ export class Server {
         }));
 
         //* Middlewares
+        // Servir archivos estáticos desde la carpeta 'public'
+        this.app.use('/public', express.static(path.join(__dirname, 'public')));
         this.app.use(morgan('dev')); // Logs from API
         this.app.use(express.json()); // Raw
         this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded

@@ -9,8 +9,9 @@ export const envs = {
   MAILER_SERVICE: get("MAILER_SERVICE").required().asString(),
   MAILER_EMAIL: get("MAILER_EMAIL").required().asString(),
   MAILER_SECRET_KEY: get("MAILER_SECRET_KEY").required().asString(),
-  MAILER_USER: get("MAILER_USER").required().asString(),
-  MAILER_PASSWORD: get("MAILER_PASSWORD").required().asString(),
-  MAILER_PORT: get("MAILER_PORT").required().asString(),
-  MAILER_HOST: get("MAILER_HOST").required().asString(),
+  MAILTRAP_USER: get("MAILTRAP_USER").required().asString(),
+  MAILTRAP_PASSWORD: get("MAILTRAP_PASSWORD").required().asString(),
+  MAILTRAP_HOST: get("MAILTRAP_HOST").required().asString(),
+  MAILTRAP_PORT: get("MAILTRAP_PORT").required().asPortNumber(),
+  DEV: get("DEV").required().asBool(),
 };
