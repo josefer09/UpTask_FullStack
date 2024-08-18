@@ -91,4 +91,10 @@ export class AuthController {
 
       }
 
+      getUserAuth = (req: Request, res: Response) => {
+        const user = req.user;
+
+        return res.json(user);
+      }
+
 }

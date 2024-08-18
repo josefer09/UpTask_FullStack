@@ -14,4 +14,5 @@ export const envs = {
   MAILTRAP_HOST: get("MAILTRAP_HOST").required().asString(),
   MAILTRAP_PORT: get("MAILTRAP_PORT").required().asPortNumber(),
   DEV: get("DEV").required().asBool(),
+  SECTRET_KEY: get("SECTRET_KEY").required().asString(),
 };

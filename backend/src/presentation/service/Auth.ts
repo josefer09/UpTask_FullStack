@@ -1,6 +1,6 @@
 import { CreateUserDto } from "../../domain/dtos/auth/createUser.dto";
 import { BcryptAdapter, CustomError, generateToken } from "../../utils";
-import User from "../../model/User";
+import User, { IUser } from "../../model/User";
 import Token from "../../model/Token";
 import { ValidateToken } from "../../domain/dtos/token/validateToken.dto";
 import { AuthUserDto } from "../../domain/dtos/auth/authUser.dto";
@@ -8,6 +8,7 @@ import { IEmailService } from "../interfaces";
 import { RequestCode } from "../../domain/dtos/token/requestCode.dto";
 import { AuthUserEmailDto } from "../../domain/dtos/auth/authUserEmail.dto";
 import { UpdatePasswordDto } from "../../domain/dtos/auth/updatePassword.dto";
+import { JsonWebToken } from "../../utils/jsonWebToken";
 
 export class AuthService {
   // DI
@@ -102,7 +103,14 @@ export class AuthService {
       );
       if (!userPassMatch) throw CustomError.badRequest("Password incorrect");
 
-      return { msg: "Succefull" };
+      // Create JSON Web Token
+      const token = JsonWebToken.generateToken({id: user.id});
+
+      return { 
+        msg: 'Login successful',
+        token,
+      }
+
     } catch (error) {
       if (error instanceof CustomError) throw error;
       console.log(error);

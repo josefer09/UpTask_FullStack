@@ -1,6 +1,7 @@
 import { CreateProjectDto } from "../../domain/dtos/project/createProject.dto";
 import { UpdateProjectDto } from "../../domain/dtos/project/updateProject.dto";
 import { ProjectModel } from "../../model/Project";
+import { IUser } from "../../model/User";
 import { CustomError } from "../../utils";
 
 
@@ -10,10 +11,14 @@ export class ProjectService {
 
     constructor() {}
 
-    async createProject(createProjectDto: CreateProjectDto) {
+    async createProject(createProjectDto: CreateProjectDto, user: IUser) {
         // Almacenar en la db
         try {
             const project = new ProjectModel(createProjectDto);
+
+            // Set Manager
+            project.manager = user;
+            
             await project.save();
             return project;
         } catch (error) {
@@ -22,9 +27,13 @@ export class ProjectService {
         }
     }
 
-    async getProjects() {
+    async getProjects(user: IUser) {
         try {
-            const projects = await ProjectModel.find();
+            const projects = await ProjectModel.find({
+                $or: [
+                    {manager: {$in: user}},
+                ]
+            });
             return projects;
         } catch (error) {
             console.log(error);
@@ -32,10 +41,11 @@ export class ProjectService {
         }
     }
 
-    async getProjectById(id: string) {
+    async getProjectById(id: string, user: IUser) {
         try {
             const project = await ProjectModel.findById(id).populate('tasks');
             if ( !project ) throw CustomError.notFound(`Project with id: ${id} not found`);
+            if ( project.manager?.toString() !== user.id.toString() ) throw CustomError.unauthorized('Action not valid');
             return project
         } catch (error) {
             if ( error instanceof CustomError ) {
@@ -46,10 +56,11 @@ export class ProjectService {
         }
     }
 
-    async updateProject(id: string, body: UpdateProjectDto) {
+    async updateProject(id: string, body: UpdateProjectDto, user: IUser) {
         try {
             const project = await ProjectModel.findByIdAndUpdate(id, body);
             if (!project) throw CustomError.notFound(`Project with id: ${id} not found`);
+            if ( project.manager?.toString() !== user.id.toString() ) throw CustomError.unauthorized('Action not valid, only Manager can update this project');
             return {
                 msg: 'Project Updated',
             }
@@ -60,10 +71,11 @@ export class ProjectService {
         }
     }
 
-    async deleteProject(id: string) {
+    async deleteProject(id: string, user: IUser) {
         try {
             const project = await ProjectModel.findByIdAndDelete(id);
             if (!project) throw CustomError.notFound(`Project with id: ${id} not found`);
+            if ( project.manager?.toString() !== user.id.toString() ) throw CustomError.unauthorized('Action not valid, only Manager can delete this project');
             return {
                 msg: 'Project Deleted'
             }

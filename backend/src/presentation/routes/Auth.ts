@@ -6,6 +6,7 @@ import { envs } from "../../config/envs";
 import { MailTrapService } from "../email/mailTrapService";
 import { GmailService } from "../email/gmailService";
 import { handleInputError } from "../middleware/validation";
+import { authenticate } from "../middleware/auth";
 
 
 
@@ -25,6 +26,7 @@ export class AuthRoutes {
         router.post('/forgot-password', controller.postResetPassword);
         router.post('/validate-token', controller.postValidateToken);
         router.post('/update-password/:token', param('token').isNumeric().withMessage('Token is required'), handleInputError, controller.postUpdatePassword);
+        router.get('/user', authenticate, controller.getUserAuth);
 
 
         return router;

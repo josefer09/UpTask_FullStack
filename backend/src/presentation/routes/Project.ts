@@ -7,6 +7,7 @@ import { TaskController } from "../controller";
 import { TaskService } from "../service/Task";
 import { validateProjectExist } from "../middleware/Project";
 import { taskBelongToProject, validateTaskExist } from "../middleware/Task";
+import { authenticate } from "../middleware/auth";
 
 export class ProjectRoutes {
   static get routes(): Router {
@@ -18,6 +19,8 @@ export class ProjectRoutes {
 
     const taskService = new TaskService();
     const taskController = new TaskController(taskService);
+
+    router.use(authenticate);
 
     router.post("/", controller.post);
     router.get("/", controller.get);
