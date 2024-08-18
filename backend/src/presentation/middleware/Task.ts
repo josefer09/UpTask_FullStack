@@ -49,3 +49,20 @@ export function taskBelongToProject(req: Request, res: Response, next: NextFunct
     }
     next();
 }
+
+export function hasAuthorization(req: Request, res: Response, next: NextFunction) {
+    try {
+        if( req.user?.id.toString() !== req.project.manager!.toString() ) {
+            const error = CustomError.forbidden('Action not valid, this task is from other project');
+            res.status(error.statusCode).json({ error: error.message});
+            return next(error);
+        }
+    } catch (error) {
+        if(error instanceof CustomError) return next(error);
+        console.log(error);
+        const serverError = CustomError.internalServer('Server Error');
+        res.status(serverError.statusCode).json({ error: serverError.message});
+        return next(serverError);
+    }
+    next();
+}

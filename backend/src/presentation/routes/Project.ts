@@ -6,7 +6,7 @@ import { handleInputError } from "../middleware/validation";
 import { TaskController, TeamController } from "../controller";
 import { TaskService } from "../service/Task";
 import { validateProjectExist } from "../middleware/Project";
-import { taskBelongToProject, validateTaskExist } from "../middleware/Task";
+import { hasAuthorization, taskBelongToProject, validateTaskExist } from "../middleware/Task";
 import { authenticate } from "../middleware/auth";
 import { TeamService } from "../service/Team";
 
@@ -59,6 +59,7 @@ export class ProjectRoutes {
 
     router.post(
       "/:projectId/task",
+      hasAuthorization,
       taskController.post
     );
 
@@ -74,11 +75,13 @@ export class ProjectRoutes {
 
     router.put(
       "/:projectId/task/:taskId",
+      hasAuthorization,
       taskController.put,
     );
 
     router.delete(
       "/:projectId/task/:taskId",
+      hasAuthorization,
       taskController.delete,
     );
 
@@ -104,7 +107,7 @@ export class ProjectRoutes {
     )
 
     router.delete(
-      "/:projectId/team",
+      "/:projectId/team/:userId",
       teamController.deleteMember,
     );
 

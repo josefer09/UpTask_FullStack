@@ -13,7 +13,7 @@ export class TeamController {
 
     private handleError = (error: unknown, res: Response) => {
         if (error instanceof CustomError) {
-          return res.status(error.statusCode).json({ msg: error.message });
+          return res.status(error.statusCode).json({ error: error.message });
         }
     
         console.log(error);
@@ -41,12 +41,10 @@ export class TeamController {
       }
 
       deleteMember = (req: Request, res: Response) => {
-        const [error, findMongoIdDto] = FindMongoIdDto.create(req.body);
-        if(error) return res.status(400).json({error});
-
+        const { userId } = req.params;
         const project = req.project;
 
-        this.service.removeMemberTeam(findMongoIdDto!, project)
+        this.service.removeMemberTeam(userId, project)
         .then(response => res.json(response))
         .catch(error => this.handleError(error, res));
       }

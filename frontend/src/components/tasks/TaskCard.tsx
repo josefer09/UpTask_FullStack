@@ -9,29 +9,28 @@ import { Fragment } from "react/jsx-runtime";
 
 type TaskCardProps = {
   task: Task;
+  canEdit: boolean;
 };
-export default function TaskCard({ task }: TaskCardProps) {
-
+export default function TaskCard({ task, canEdit }: TaskCardProps) {
   // ProjectId
   const params = useParams();
   const projectId = params.projectId!;
 
   const navigate = useNavigate();
 
-
   const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: deleteTask,
     onError: () => {
-      return toast.error('Error: Task not deleted');
+      return toast.error("Error: Task not deleted");
     },
     onSuccess: (data) => {
       toast.success(data.msg);
-      queryClient.invalidateQueries({queryKey: ["viewProject", projectId]});
+      queryClient.invalidateQueries({ queryKey: ["viewProject", projectId] });
       return;
-    }
-  })
+    },
+  });
 
   return (
     <>
@@ -40,6 +39,9 @@ export default function TaskCard({ task }: TaskCardProps) {
           <button
             className=" text-xl font-bold text-slate-600 text-left"
             type="button"
+            onClick={() =>
+              navigate(location.pathname + `?viewTask=${task._id}`)
+            }
           >
             {task.name}
           </button>
@@ -66,30 +68,43 @@ export default function TaskCard({ task }: TaskCardProps) {
                     <button
                       type="button"
                       className="block px-3 py-1 text-sm leading-6 text-gray-900"
-                      onClick={() => navigate(location.pathname + `?viewTask=${task._id}`)}
+                      onClick={() =>
+                        navigate(location.pathname + `?viewTask=${task._id}`)
+                      }
                     >
                       View Task
                     </button>
                   </Menu.Item>
-                  <Menu.Item>
-                    <button
-                      type="button"
-                      className="block px-3 py-1 text-sm leading-6 text-sky-500"
-                      onClick={() => navigate(location.pathname + `?EditTask=${task._id}`)}
-                    >
-                      Edit Task
-                    </button>
-                  </Menu.Item>
 
-                  <Menu.Item>
-                    <button
-                      type="button"
-                      className="block px-3 py-1 text-sm leading-6 text-red-500"
-                      onClick={() => mutate({projectId, taskId: task._id})}
-                    >
-                      Delete Task
-                    </button>
-                  </Menu.Item>
+                  {canEdit && (
+                    <>
+                      <Menu.Item>
+                        <button
+                          type="button"
+                          className="block px-3 py-1 text-sm leading-6 text-sky-500"
+                          onClick={() =>
+                            navigate(
+                              location.pathname + `?EditTask=${task._id}`
+                            )
+                          }
+                        >
+                          Edit Task
+                        </button>
+                      </Menu.Item>
+
+                      <Menu.Item>
+                        <button
+                          type="button"
+                          className="block px-3 py-1 text-sm leading-6 text-red-500"
+                          onClick={() =>
+                            mutate({ projectId, taskId: task._id })
+                          }
+                        >
+                          Delete Task
+                        </button>
+                      </Menu.Item>
+                    </>
+                  )}
                 </Menu.Items>
               </Transition>
             </Menu>

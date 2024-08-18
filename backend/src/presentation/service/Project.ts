@@ -31,7 +31,8 @@ export class ProjectService {
         try {
             const projects = await ProjectModel.find({
                 $or: [
-                    {manager: {$in: user}},
+                    {manager: {$in: user.id}},
+                    {team: {$in: user.id}}
                 ]
             });
             return projects;
@@ -45,7 +46,7 @@ export class ProjectService {
         try {
             const project = await ProjectModel.findById(id).populate('tasks');
             if ( !project ) throw CustomError.notFound(`Project with id: ${id} not found`);
-            if ( project.manager?.toString() !== user.id.toString() ) throw CustomError.unauthorized('Action not valid');
+            if ( project.manager?.toString() !== user.id.toString() && !project.team.includes(user.id)) throw CustomError.unauthorized('Action not valid');
             return project
         } catch (error) {
             if ( error instanceof CustomError ) {

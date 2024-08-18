@@ -43,7 +43,7 @@ export class TeamService {
         }
     }
 
-    async removeMemberTeam({ id }: FindMongoIdDto, project: IProject) {
+    async removeMemberTeam(id: string, project: IProject) {
         try {
             if( !project.team.some(team => team!.toString() === id.toString())) throw CustomError.badRequest('The user does not exists in the project');
 

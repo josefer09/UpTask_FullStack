@@ -4,6 +4,7 @@ import { statusTranslation } from "@/locales/en";
 
 type TaskListProps = {
   tasks: Task[];
+  canEdit: boolean;
 };
 
 type GroupedTask = {
@@ -26,7 +27,7 @@ const statusColors: {[key: string]: string} = {
     completed: 'border-green-500',
   };
 
-export default function TaskList({ tasks }: TaskListProps) {
+export default function TaskList({ tasks, canEdit, }: TaskListProps) {
   console.log(tasks);
   /**
    * Metodo que se encarga de organizar y agrupar las tareas por el status
@@ -52,7 +53,8 @@ export default function TaskList({ tasks }: TaskListProps) {
               {tasks.length === 0 ? (
                 <li className="text-gray-500 text-center pt-3">No Tasks</li>
               ) : (
-                tasks.map((task) => <TaskCard key={task._id} task={task} />)
+                tasks.map((task) => <TaskCard key={task._id} task={task} 
+                canEdit={canEdit}/>)
               )}
             </ul>
           </div>

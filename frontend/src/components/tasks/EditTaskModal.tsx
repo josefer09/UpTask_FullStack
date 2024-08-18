@@ -40,7 +40,9 @@ export default function EditTaskModal({ data, projectId, taskId }: EditTaskModal
       reset();
       navigate(location.pathname, { replace: true });
     },
-    onError: () => {},
+    onError: () => {
+      toast.error('Action not valid');
+    },
   });
 
   const handleEditTask = (formData: TaskFormData) => {

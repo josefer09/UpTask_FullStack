@@ -36,7 +36,7 @@ export default function AddTaskModal() {
       navigate(location.pathname, { replace: true });
     },
     onError: () => {
-      toast.error('Failed to create Project');
+      toast.error('Failed to create task, action not valid');
     },
   });
 
