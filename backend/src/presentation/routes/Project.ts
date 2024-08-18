@@ -3,22 +3,25 @@ import { ProjectController } from "../controller/Project";
 import { ProjectService } from "../service/Project";
 import { param } from "express-validator";
 import { handleInputError } from "../middleware/validation";
-import { TaskController } from "../controller";
+import { TaskController, TeamController } from "../controller";
 import { TaskService } from "../service/Task";
 import { validateProjectExist } from "../middleware/Project";
 import { taskBelongToProject, validateTaskExist } from "../middleware/Task";
 import { authenticate } from "../middleware/auth";
+import { TeamService } from "../service/Team";
 
 export class ProjectRoutes {
   static get routes(): Router {
     const router = Router();
 
     const service = new ProjectService();
-
     const controller = new ProjectController(service);
 
     const taskService = new TaskService();
     const taskController = new TaskController(taskService);
+
+    const teamService = new TeamService();
+    const teamController = new TeamController(teamService);
 
     router.use(authenticate);
 
@@ -82,7 +85,28 @@ export class ProjectRoutes {
     router.post(
       "/:projectId/task/:taskId",
       taskController.postStatus,
+    );
+    
+    //?? Team Routes
+    router.post(
+      "/:projectId/team/find",
+      teamController.postFindEmail,
+    );
+
+    router.get(
+      "/:projectId/team",
+      teamController.getTeamMembers,
     )
+      
+    router.post(
+      "/:projectId/team",
+      teamController.postAddMember,
+    )
+
+    router.delete(
+      "/:projectId/team",
+      teamController.deleteMember,
+    );
 
     return router;
   }
