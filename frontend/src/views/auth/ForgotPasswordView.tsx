@@ -1,85 +1,71 @@
 import { useForm } from "react-hook-form";
-import { UserLoginForm } from "@/types/index";
-import ErrorMessage from "@/components/ErrorMessage";
 import { Link } from "react-router-dom";
+import { ForgotPasswordForm } from "../../types";
+import ErrorMessage from "@/components/ErrorMessage";
 import { useMutation } from "@tanstack/react-query";
-import { authenticateUser } from "@/api/AuthApi";
+import { forgotPassword } from "@/api/AuthApi";
 import { toast } from "react-toastify";
 
-export default function LoginView() {
-  const initialValues: UserLoginForm = {
+export default function ForgotPasswordView() {
+  const initialValues: ForgotPasswordForm = {
     email: "",
-    password: "",
   };
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({ defaultValues: initialValues });
 
-  const handleLogin = (formData: UserLoginForm) => mutate(formData);
-
   const { mutate } = useMutation({
-    mutationFn: authenticateUser,
+    mutationFn: forgotPassword,
     onError: (error) => {
-      toast.error(error.message);
+        toast.error(error.message);
     },
     onSuccess: (data) => {
-      toast.success(data?.msg);
-    },
-  });
+        toast.success(data?.msg);
+        reset;
+    }
+  })
+
+  const handleForgotPassword = (formData: ForgotPasswordForm) => mutate(formData);
 
   return (
     <>
-    <h1 className="text-5xl font-black text-black">Sing In</h1>
+      <h1 className="text-5xl font-black text-black">Forgot Password</h1>
       <p className="text-2xl font-light text-black mt-5">
-        Start planning yours projects by  {""}
-        <span className=" text-sky-500 font-bold"> sing in</span>
+        Enter your email to receive instructions to {""}
+        <span className=" text-sky-500 font-bold"> reset your password</span>
       </p>
       <form
-        onSubmit={handleSubmit(handleLogin)}
+        onSubmit={handleSubmit(handleForgotPassword)}
         className="space-y-8 p-10 mt-10 bg-white"
         noValidate
       >
         <div className="flex flex-col gap-5">
-          <label className="font-normal text-2xl">Email</label>
-
+          <label className="font-normal text-2xl" htmlFor="email">
+            Email
+          </label>
           <input
             id="email"
             type="email"
-            placeholder="Enter email"
+            placeholder="Email de Registro"
             className="w-full p-3  border-gray-300 border"
             {...register("email", {
               required: "Email is required",
               pattern: {
                 value: /\S+@\S+\.\S+/,
-                message: "Email not valid",
+                message: "Email is not valid",
               },
             })}
           />
           {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
         </div>
 
-        <div className="flex flex-col gap-5">
-          <label className="font-normal text-2xl">Password</label>
-
-          <input
-            type="password"
-            placeholder="Enter Password"
-            className="w-full p-3  border-gray-300 border"
-            {...register("password", {
-              required: "Password is required",
-            })}
-          />
-          {errors.password && (
-            <ErrorMessage>{errors.password.message}</ErrorMessage>
-          )}
-        </div>
-
         <input
           type="submit"
-          value="Sing In"
-          className="bg-sky-500 hover:bg-sky-600 w-full p-3  text-white font-black  text-xl cursor-pointer"
+          value="Send Instructions"
+          className="bg-sky-600 hover:bg-sky-700 w-full p-3  text-white font-black  text-xl cursor-pointer"
         />
       </form>
 

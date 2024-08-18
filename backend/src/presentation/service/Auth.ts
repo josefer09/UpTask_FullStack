@@ -6,6 +6,8 @@ import { ValidateToken } from "../../domain/dtos/token/validateToken.dto";
 import { AuthUserDto } from "../../domain/dtos/auth/authUser.dto";
 import { IEmailService } from "../interfaces";
 import { RequestCode } from "../../domain/dtos/token/requestCode.dto";
+import { AuthUserEmailDto } from "../../domain/dtos/auth/authUserEmail.dto";
+import { UpdatePasswordDto } from "../../domain/dtos/auth/updatePassword.dto";
 
 export class AuthService {
   // DI
@@ -137,6 +139,72 @@ export class AuthService {
       console.log(error);
       if (error instanceof CustomError) throw error;
       throw CustomError.internalServer("Server Error");
+    }
+  }
+
+  async forgotPassword(data: AuthUserEmailDto) {
+    try {
+      // Validate User exist
+      const user = await User.findOne({ email: data.email });
+      if (!user) throw CustomError.forbidden("User is not registered");
+
+      // Generate Token
+      const token = new Token();
+      token.token = generateToken();
+      token.user = user.id;
+      await token.save();
+
+      // Send Email
+      this.emailService.sendResetPasswordEmail({
+        email: user.email,
+        name: user.name,
+        token: token.token,
+      });
+
+      return { msg: "An email with instruction has been sent" };
+    } catch (error) {
+      console.log(error);
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Server Error");
+    }
+  }
+
+  async validateToken(validateToken: ValidateToken) {
+    try {
+      const tokenExist = await Token.findOne({ token: validateToken.token });
+
+      if (!tokenExist) throw CustomError.notFound("Token not valid");
+
+      return { msg: "Valid Token, set your new password" };
+    } catch (error) {
+      console.log(error);
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer('Server Error');
+    }
+  }
+
+  async updatePassword(updatePassword: UpdatePasswordDto, token: string) {
+    try {
+      const tokenExist = await Token.findOne({ token: token.toString() });
+      if (!tokenExist) throw CustomError.notFound("Token not valid");
+
+      // User
+      const user = await User.findById(tokenExist.user);
+      if ( !user ) throw CustomError.notFound('User not found');
+
+      // Validate password
+      if (updatePassword.password !== updatePassword.password_confirmation) throw CustomError.badRequest('The Password do not match');
+
+      // Hash & Update Password
+      user.password = BcryptAdapter.hash(updatePassword.password);
+
+      await Promise.allSettled([user.save(), tokenExist.deleteOne()]);
+
+      return { msg: 'The Password was successfully updated' };
+    } catch (error) {
+      console.log(error);
+      if(error instanceof CustomError) throw error;
+      throw CustomError.internalServer('Server Error');
     }
   }
 }

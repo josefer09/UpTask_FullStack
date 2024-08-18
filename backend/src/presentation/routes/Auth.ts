@@ -1,9 +1,11 @@
 import { Router } from "express";
+import { param } from "express-validator";
 import { AuthController } from "../controller";
 import { AuthService } from "../service/Auth";
 import { envs } from "../../config/envs";
 import { MailTrapService } from "../email/mailTrapService";
 import { GmailService } from "../email/gmailService";
+import { handleInputError } from "../middleware/validation";
 
 
 
@@ -20,6 +22,9 @@ export class AuthRoutes {
         router.post('/confirm-account', controller.postConfirmCount);
         router.post('/login', controller.postLogin);
         router.post('/request-code', controller.postRequestCode);
+        router.post('/forgot-password', controller.postResetPassword);
+        router.post('/validate-token', controller.postValidateToken);
+        router.post('/update-password/:token', param('token').isNumeric().withMessage('Token is required'), handleInputError, controller.postUpdatePassword);
 
 
         return router;

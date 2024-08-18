@@ -5,6 +5,8 @@ import { CreateUserDto } from '../../domain/dtos/auth/createUser.dto';
 import { ValidateToken } from '../../domain/dtos/token/validateToken.dto';
 import { AuthUserDto } from '../../domain/dtos/auth/authUser.dto';
 import { RequestCode } from '../../domain/dtos/token/requestCode.dto';
+import { AuthUserEmailDto } from '../../domain/dtos/auth/authUserEmail.dto';
+import { UpdatePasswordDto } from '../../domain/dtos/auth/updatePassword.dto';
 
 
 export class AuthController {
@@ -56,6 +58,37 @@ export class AuthController {
         this.service.requestConfirmedCode(email!)
         .then( response => res.json(response))
         .catch( error => this.handleError(error, res));
+      }
+
+      postResetPassword = (req: Request, res: Response) => {
+        const [error, email] = AuthUserEmailDto.create(req.body);
+        if( error ) return res.status(400).json({error});
+
+        this.service.forgotPassword(email!)
+        .then( response => res.json(response))
+        .catch( error => this.handleError(error, res));
+      }
+
+      postValidateToken = (req: Request, res: Response) => {
+        const [error, validateToken] = ValidateToken.validate(req.body);
+        if( error ) return res.status(400).json({error});
+
+        this.service.validateToken(validateToken!)
+        .then( response => res.json(response))
+        .catch( error => this.handleError(error, res));
+      }
+
+      postUpdatePassword = (req: Request, res: Response) => {
+        const [error, updatePassword] = UpdatePasswordDto.create(req.body);
+        if( error ) return res.status(400).json({error});
+
+        // Token
+        const { token } = req.params;
+
+        this.service.updatePassword(updatePassword!, token)
+        .then( response => res.json(response))
+        .catch( error => this.handleError(error, res));
+
       }
 
 }
