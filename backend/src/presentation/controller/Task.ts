@@ -57,8 +57,9 @@ export class TaskController {
         const project = req.project;
         const taskData: ITask = req.body;
         const task = req.task;
+        const user = req.user;
 
-        this.service.updateTask(project, task, req.body)
+        this.service.updateTask(project, task, req.body, user!)
         .then( taskUpdated => res.json(taskUpdated))
         .catch( error => this.handleError(error, res));
     }
@@ -76,8 +77,9 @@ export class TaskController {
         const project = req.project;
         const task = req.task;
         const { status } = req.body;
+        const user = req.user;
 
-        this.service.updateStatus(project, task, status)
+        this.service.updateStatus(project, task, status, user!)
         .then( taskStatus => res.json(taskStatus))
         .catch( error => this.handleError(error, res));
     }

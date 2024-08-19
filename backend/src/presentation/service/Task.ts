@@ -1,6 +1,7 @@
 import { CreateTaskDto } from "../../domain/dtos/task/createTask.dto";
 import { IProject } from "../../model/Project";
 import { ITask, Task, TaskStatus } from "../../model/Task";
+import { IUser } from "../../model/User";
 import { CustomError } from "../../utils";
 
 export class TaskService {
@@ -40,7 +41,8 @@ export class TaskService {
 
     async getTaskById(project: IProject, task: ITask) {
         try {
-            return task;
+            const taskData = await Task.findById(task.id).populate({path: 'completedBy.user', select: 'email name id'});
+            return taskData;
         } catch (error) {
             if( error instanceof CustomError) throw error;
             console.log(error);
@@ -48,7 +50,7 @@ export class TaskService {
         }
     }
 
-    async updateTask(project: IProject, task: ITask, dataUpdate: ITask) {
+    async updateTask(project: IProject, task: ITask, dataUpdate: ITask, user: IUser) {
         try {
             if(dataUpdate.name !== undefined ) {
                 task.name = dataUpdate.name;
@@ -57,6 +59,8 @@ export class TaskService {
             if(dataUpdate.description !== undefined ) {
                 task.description = dataUpdate.description;
             }
+
+            task.completedBy = user.id;
 
             await task.save();
 
@@ -88,13 +92,21 @@ export class TaskService {
         }
     }
 
-    async updateStatus(project: IProject, task: ITask, status: TaskStatus) {
+    async updateStatus(project: IProject, task: ITask, status: TaskStatus, user: IUser) {
         try {
             if( !['pending', 'onHold', 'inProgress', 'underReview', 'completed'].includes(status) ) {
                 throw CustomError.forbidden(`Status: ${status} is incompatible`)
             }
 
             task.status = status;
+
+            const data = {
+                user: user.id,
+                status,
+            };
+
+            task.completedBy.push(data);
+
             await task.save();
 
             return {

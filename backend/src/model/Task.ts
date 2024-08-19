@@ -1,42 +1,63 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 
 const taskStatus = {
-    PENDING: 'pending',
-    ON_HOLD: 'onHold',
-    IN_PROGRESS: 'inProgress',
-    UNDER_REVIEW: 'underReview',
-    COMPLETED: 'completed'
+  PENDING: "pending",
+  ON_HOLD: "onHold",
+  IN_PROGRESS: "inProgress",
+  UNDER_REVIEW: "underReview",
+  COMPLETED: "completed",
 } as const; // Lo convierte en readOnly
 
-export type TaskStatus = typeof taskStatus[ keyof typeof taskStatus]
+export type TaskStatus = (typeof taskStatus)[keyof typeof taskStatus];
 
 export interface ITask extends Document {
-    name: string;
-    description: string;
-    project: Types.ObjectId;
-    status: TaskStatus;
+  name: string;
+  description: string;
+  project: Types.ObjectId;
+  status: TaskStatus;
+  completedBy: {
+    user: Types.ObjectId,
+    status: TaskStatus
+  }[];
 }
 
-export const TaskSchema: Schema = new Schema({
+export const TaskSchema: Schema = new Schema(
+  {
     name: {
-        type: String,
-        trim: true,
-        require: [true, 'Name is required'],
+      type: String,
+      trim: true,
+      require: [true, "Name is required"],
     },
     description: {
-        type: String,
-        trim: true,
-        require: [true, 'Description is required'],
+      type: String,
+      trim: true,
+      require: [true, "Description is required"],
     },
     project: {
-        type: Types.ObjectId,
-        ref: 'Project',
+      type: Types.ObjectId,
+      ref: "Project",
     },
     status: {
-        type: String,
-        enum: Object.values(taskStatus),
-        default: taskStatus.PENDING,
-    }
-}, { timestamps: true});
+      type: String,
+      enum: Object.values(taskStatus),
+      default: taskStatus.PENDING,
+    },
+    completedBy: [
+      {
+        user: {
+          type: Types.ObjectId,
+          ref: "User",
+          default: null,
+        },
+        status: {
+            type: String,
+            enum: Object.values(taskStatus),
+            default: taskStatus.PENDING
+        }
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-export const Task = mongoose.model<ITask>('Task', TaskSchema);
+export const Task = mongoose.model<ITask>("Task", TaskSchema);

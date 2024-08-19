@@ -40,11 +40,17 @@ export const taskSchema = z.object({
     status: taskStatusSchema,
     updatedAt: z.string(),
     createdAt: z.string(),
+    completedBy: z.array(z.object({
+        _id: z.string(),
+        user: userSchema,
+        status: taskStatusSchema,
+    })),
 });
 
 export type Task = z.infer<typeof taskSchema>;
 export type TaskStatus = z.infer<typeof taskStatusSchema>;
 export type TaskFormData = Pick<Task, 'name' | 'description'>;
+export type TaskDetail = z.infer<typeof taskSchema>;
 
 
 
