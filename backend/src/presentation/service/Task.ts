@@ -41,7 +41,7 @@ export class TaskService {
 
     async getTaskById(project: IProject, task: ITask) {
         try {
-            const taskData = await Task.findById(task.id).populate({path: 'completedBy.user', select: 'email name id'});
+            const taskData = await Task.findById(task.id).populate({path: 'completedBy.user', select: 'email name id'}).populate({path: 'notes', populate: { path: 'createdBy', select: 'id name email'}});
             return taskData;
         } catch (error) {
             if( error instanceof CustomError) throw error;

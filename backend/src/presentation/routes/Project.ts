@@ -9,6 +9,8 @@ import { validateProjectExist } from "../middleware/Project";
 import { hasAuthorization, taskBelongToProject, validateTaskExist } from "../middleware/Task";
 import { authenticate } from "../middleware/auth";
 import { TeamService } from "../service/Team";
+import { NoteService } from "../service/Note";
+import { NoteController } from "../controller/Notes";
 
 export class ProjectRoutes {
   static get routes(): Router {
@@ -22,6 +24,9 @@ export class ProjectRoutes {
 
     const teamService = new TeamService();
     const teamController = new TeamController(teamService);
+
+    const noteService = new NoteService();
+    const noteController = new NoteController(noteService);
 
     router.use(authenticate);
 
@@ -109,6 +114,22 @@ export class ProjectRoutes {
     router.delete(
       "/:projectId/team/:userId",
       teamController.deleteMember,
+    );
+
+    //** Routes for Notes */
+    router.post(
+      "/:projectId/tasks/:taskId/notes",
+      noteController.postCreate,
+    );
+
+    router.get(
+      "/:projectId/tasks/:taskId/notes",
+      noteController.getNotes,
+    );
+
+    router.delete(
+      "/:projectId/tasks/:taskId/notes/:noteId",
+      noteController.deleteNote,     
     );
 
     return router;
