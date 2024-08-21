@@ -7,32 +7,21 @@ import {
   Transition,
 } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
-import { Link } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { DeleteProject, GetProjects } from "@/api/ProjectApi";
-import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
+import {  useQuery } from "@tanstack/react-query";
+import { GetProjects } from "@/api/ProjectApi";
 import { useAuth } from "@/hooks/useAuth";
 import { isManager } from "@/utils/policies";
+import DeleteProjectModal from "@/components/projects/DeleteProjectModal";
 
 export default function DashboardView() {
   const { data: user, isLoading: authLoading } = useAuth();
 
+  const navigate = useNavigate();
+
   const { data, isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: GetProjects,
-  });
-
-  const queryClient = useQueryClient();
-
-  const { mutate } = useMutation({
-    mutationFn: DeleteProject,
-    onError: () => {
-      toast.error("Error, project not deleted");
-    },
-    onSuccess: (data) => {
-      toast.success(data.msg);
-      queryClient.invalidateQueries({ queryKey: ["projects"] });
-    },
   });
 
   if (isLoading && authLoading) return "Loading...";
@@ -131,7 +120,7 @@ export default function DashboardView() {
                               <button
                                 type="button"
                                 className="block px-3 py-1 text-sm leading-6 text-red-500"
-                                onClick={() => mutate(project.id)}
+                                onClick={() => navigate(location.pathname + `?deleteProject=${project.id}`)}
                               >
                                 Delete Project
                               </button>
@@ -153,6 +142,7 @@ export default function DashboardView() {
             </Link>
           </p>
         )}
+        <DeleteProjectModal/>
       </>
     );
 }
