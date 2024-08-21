@@ -7,6 +7,9 @@ import { AuthUserDto } from '../../domain/dtos/auth/authUser.dto';
 import { RequestCode } from '../../domain/dtos/token/requestCode.dto';
 import { AuthUserEmailDto } from '../../domain/dtos/auth/authUserEmail.dto';
 import { UpdatePasswordDto } from '../../domain/dtos/auth/updatePassword.dto';
+import { UpdateUserProfileDto } from '../../domain/dtos/auth/updateUserProfile.dto';
+import { ChangePasswordDto } from '../../domain/dtos/auth/changePassword.dto';
+import { CheckPasswordDto } from '../../domain/dtos/auth/checkPassword.dto';
 
 
 export class AuthController {
@@ -97,4 +100,38 @@ export class AuthController {
         return res.json(user);
       }
 
+      putUpdateUserProfile = (req: Request, res: Response) => {
+        const [error, updateUserProfileDto] = UpdateUserProfileDto.create(req.body);
+        if( error ) return res.status(400).json({error});
+        // User
+        const user = req.user;
+
+        this.service.updateProfile(user!, updateUserProfileDto!)
+        .then( response => res.json(response))
+        .catch( error => this.handleError(error, res));
+      }
+
+      postChangePassword = (req: Request, res: Response) => {
+        const [error, changePasswordDto] = ChangePasswordDto.create(req.body);
+        if( error ) return res.status(400).json({error});
+
+        // User
+        const user = req.user;
+
+        this.service.changePassword(user!, changePasswordDto!)
+        .then( response => res.json(response))
+        .catch( error => this.handleError(error, res));
+      }
+
+      postCheckPassword = (req: Request, res: Response) => {
+        const [error, checkPasswordDto] = CheckPasswordDto.create(req.body);
+        if( error ) return res.status(400).json({error});
+
+        // User
+        const user = req.user;
+
+        this.service.checkPassword(user!, checkPasswordDto!)
+        .then(response => res.json(response))
+        .catch(error => this.handleError(error, res));
+      }
 }

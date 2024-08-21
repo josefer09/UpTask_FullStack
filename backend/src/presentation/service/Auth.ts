@@ -9,6 +9,9 @@ import { RequestCode } from "../../domain/dtos/token/requestCode.dto";
 import { AuthUserEmailDto } from "../../domain/dtos/auth/authUserEmail.dto";
 import { UpdatePasswordDto } from "../../domain/dtos/auth/updatePassword.dto";
 import { JsonWebToken } from "../../utils/jsonWebToken";
+import { UpdateUserProfileDto } from "../../domain/dtos/auth/updateUserProfile.dto";
+import { ChangePasswordDto } from "../../domain/dtos/auth/changePassword.dto";
+import { CheckPasswordDto } from "../../domain/dtos/auth/checkPassword.dto";
 
 export class AuthService {
   // DI
@@ -104,13 +107,12 @@ export class AuthService {
       if (!userPassMatch) throw CustomError.badRequest("Password incorrect");
 
       // Create JSON Web Token
-      const token = JsonWebToken.generateToken({id: user.id});
+      const token = JsonWebToken.generateToken({ id: user.id });
 
-      return { 
-        msg: 'Login successful',
+      return {
+        msg: "Login successful",
         token,
-      }
-
+      };
     } catch (error) {
       if (error instanceof CustomError) throw error;
       console.log(error);
@@ -187,7 +189,7 @@ export class AuthService {
     } catch (error) {
       console.log(error);
       if (error instanceof CustomError) throw error;
-      throw CustomError.internalServer('Server Error');
+      throw CustomError.internalServer("Server Error");
     }
   }
 
@@ -198,21 +200,79 @@ export class AuthService {
 
       // User
       const user = await User.findById(tokenExist.user);
-      if ( !user ) throw CustomError.notFound('User not found');
+      if (!user) throw CustomError.notFound("User not found");
 
       // Validate password
-      if (updatePassword.password !== updatePassword.password_confirmation) throw CustomError.badRequest('The Password do not match');
+      if (updatePassword.password !== updatePassword.password_confirmation)
+        throw CustomError.badRequest("The Password do not match");
 
       // Hash & Update Password
       user.password = BcryptAdapter.hash(updatePassword.password);
 
       await Promise.allSettled([user.save(), tokenExist.deleteOne()]);
 
-      return { msg: 'The Password was successfully updated' };
+      return { msg: "The Password was successfully updated" };
     } catch (error) {
       console.log(error);
-      if(error instanceof CustomError) throw error;
-      throw CustomError.internalServer('Server Error');
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Server Error");
+    }
+  }
+
+  async updateProfile(user: IUser, updateUserProfileDto: UpdateUserProfileDto) {
+    const userExist = await User.findOne({ email: updateUserProfileDto.email });
+    if (userExist && userExist.id.toString() !== user.id.toString())
+      throw CustomError.badRequest("Email is already registered");
+
+    user.email = updateUserProfileDto.email;
+    user.name = updateUserProfileDto.name;
+
+    try {
+      await user.save();
+      return { msg: "Profile updated successfully" };
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Server Error");
+    }
+  }
+
+  async changePassword(user: IUser, changePasswordDto: ChangePasswordDto) {
+    try {
+      const userExist = await User.findById(user.id);
+
+      const isCorrectPassword = BcryptAdapter.compare(
+        changePasswordDto.current_password,
+        userExist!.password
+      );
+
+      if (!isCorrectPassword)
+        throw CustomError.badRequest("Current Password is incorrect");
+
+      userExist!.password = BcryptAdapter.hash(changePasswordDto.password);
+      await userExist!.save();
+      return { msg: "The password was successfully changed" };
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Server Error");
+    }
+  }
+
+  async checkPassword(user: IUser, checkPasswordDto: CheckPasswordDto) {
+    try {
+      const userExist = await User.findById(user.id);
+
+      const isCorrectPassword = BcryptAdapter.compare(
+        checkPasswordDto.password,
+        userExist!.password
+      );
+
+      if (!isCorrectPassword)
+        throw CustomError.badRequest("Incorrect Password");
+
+      return { msg: 'Correct Password'}
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Server Error");
     }
   }
 }

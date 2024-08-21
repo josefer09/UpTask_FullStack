@@ -26,7 +26,11 @@ export class AuthRoutes {
         router.post('/forgot-password', controller.postResetPassword);
         router.post('/validate-token', controller.postValidateToken);
         router.post('/update-password/:token', param('token').isNumeric().withMessage('Token is required'), handleInputError, controller.postUpdatePassword);
+        //** Auth */
         router.get('/user', authenticate, controller.getUserAuth);
+        router.put('/profile', authenticate, controller.putUpdateUserProfile);
+        router.post('/update-password', authenticate, controller.postChangePassword);
+        router.post('/check-password', authenticate, controller.postCheckPassword);
 
 
         return router;
