@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
+import Note from "./Note";
 
 const taskStatus = {
   PENDING: "pending",
@@ -8,7 +9,7 @@ const taskStatus = {
   COMPLETED: "completed",
 } as const; // Lo convierte en readOnly
 
-export type TaskStatus = (typeof taskStatus)[keyof typeof taskStatus];
+export type TaskStatus = typeof taskStatus[keyof typeof taskStatus];
 
 export interface ITask extends Document {
   name: string;
@@ -66,5 +67,12 @@ export const TaskSchema: Schema = new Schema(
   },
   { timestamps: true }
 );
+
+// Middleware
+TaskSchema.pre('deleteOne', {document: true}, async function() {
+  const taskId = this._id;
+  if( !taskId ) return;
+  await Note.deleteMany({task: taskId});
+})
 
 export const Task = mongoose.model<ITask>("Task", TaskSchema);

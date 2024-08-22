@@ -74,9 +74,10 @@ export class ProjectService {
 
     async deleteProject(id: string, user: IUser) {
         try {
-            const project = await ProjectModel.findByIdAndDelete(id);
+            const project = await ProjectModel.findById(id);
             if (!project) throw CustomError.notFound(`Project with id: ${id} not found`);
             if ( project.manager?.toString() !== user.id.toString() ) throw CustomError.unauthorized('Action not valid, only Manager can delete this project');
+            await project.deleteOne();
             return {
                 msg: 'Project Deleted'
             }

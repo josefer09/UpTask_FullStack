@@ -59,7 +59,7 @@ export default function AddNoteForm() {
                     <input
                     id="content"
                     type="text"
-                    placeholder="Nota Content"
+                    placeholder="Note Content"
                     className="w-full p-3 border border-gray-300"
                     {...register('content', {
                         required: 'Note Content is required'

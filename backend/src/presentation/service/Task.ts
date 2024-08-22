@@ -3,6 +3,7 @@ import { IProject } from "../../model/Project";
 import { ITask, Task, TaskStatus } from "../../model/Task";
 import { IUser } from "../../model/User";
 import { CustomError } from "../../utils";
+import { Types } from "mongoose";
 
 export class TaskService {
 
@@ -52,21 +53,13 @@ export class TaskService {
 
     async updateTask(project: IProject, task: ITask, dataUpdate: ITask, user: IUser) {
         try {
-            if(dataUpdate.name !== undefined ) {
-                task.name = dataUpdate.name;
-            }
-
-            if(dataUpdate.description !== undefined ) {
-                task.description = dataUpdate.description;
-            }
-
-            task.completedBy = user.id;
+            task.name = dataUpdate.name;
+            task.description = dataUpdate.description;
 
             await task.save();
 
             return {
                 msg: 'Task Updated',
-                task: task,
             }
         } catch (error) {
             if( error instanceof CustomError ) throw error;

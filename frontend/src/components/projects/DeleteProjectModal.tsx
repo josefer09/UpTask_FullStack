@@ -20,7 +20,7 @@ export default function DeleteProjectModal() {
     const deleteProjectId = queryParams.get('deleteProject')!;
     const show = deleteProjectId ? true : false
 
-    const { register, handleSubmit, formState: { errors } } = useForm({ defaultValues: initialValues })
+    const { register, handleSubmit, reset, formState: { errors } } = useForm({ defaultValues: initialValues })
 
     const checkUserMutation = useMutation({
         mutationFn: checkPassword,
@@ -37,6 +37,7 @@ export default function DeleteProjectModal() {
         onSuccess: (data) => {
           toast.success(data.msg);
           queryClient.invalidateQueries({ queryKey: ["projects"] });
+          reset();
           navigate(location.pathname, { replace: true });
         },
       });

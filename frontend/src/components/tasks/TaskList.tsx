@@ -73,6 +73,7 @@ export default function TaskList({ tasks, canEdit }: TaskListProps) {
       queryClient.setQueryData(['project', projectId], (prevData: Project) => {
         // Update task manually
         // Actualizacion optimista
+        console.log(prevData, 'debug');
         const updatedTask = prevData.tasks.map((task) => {
           if(task._id === taskId) {
             return {

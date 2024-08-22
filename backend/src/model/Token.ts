@@ -17,8 +17,10 @@ const tokenSchema: Schema = new Schema({
     },
     expiresAt: {
         type: Date,
-        default: Date.now(),
-        expires: "600", // Se elimina a los 10 minutos
+        default: function() {
+            return Date.now() + 10 * 60 * 1000;
+        },
+        expires: "10m", // Se elimina a los 10 minutos
     },
 });
 
