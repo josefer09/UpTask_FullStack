@@ -1,4 +1,3 @@
-import Logo from '@/components/Logo';
 import LogoV2 from '@/components/LogoV2';
 import { Outlet } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';

@@ -1,5 +1,6 @@
 import { deleteTask } from "@/api/TaskApi";
-import { Task } from "@/types/index";
+import { TaskProyect } from "@/types/index";
+import { useDraggable } from "@dnd-kit/core";
 import { Menu, Transition } from "@headlessui/react";
 import { EllipsisVerticalIcon } from "@heroicons/react/20/solid";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,10 +9,13 @@ import { toast } from "react-toastify";
 import { Fragment } from "react/jsx-runtime";
 
 type TaskCardProps = {
-  task: Task;
+  task: TaskProyect;
   canEdit: boolean;
 };
 export default function TaskCard({ task, canEdit }: TaskCardProps) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task._id,
+  });
   // ProjectId
   const params = useParams();
   const projectId = params.projectId!;
@@ -32,10 +36,22 @@ export default function TaskCard({ task, canEdit }: TaskCardProps) {
     },
   });
 
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` // Mover o permitir mover elementos de izqui y derecha
+  } : undefined;
+
   return (
     <>
-      <li className="p-5 bg-white border-slate-300 flex justify-between gap-3">
-        <div className=" min-w-0 flex flex-col gap-y-4">
+      <li
+        ref={setNodeRef}
+        style={style}
+        className="p-5 bg-white border-slate-300 flex justify-between gap-3">
+        <div
+          {...listeners}
+          {...attributes}
+          
+          className=" min-w-0 flex flex-col gap-y-4"
+        >
           <button
             className=" text-xl font-bold text-slate-600 text-left"
             type="button"
