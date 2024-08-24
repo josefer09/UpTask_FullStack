@@ -99,6 +99,12 @@ export default function LoginView() {
         >
           Forgot your password? Reset
         </Link>
+        <Link
+          to="/"
+          className="text-center text-gray-800 font-normal"
+        >
+          Return to the Home page
+        </Link>
       </nav>
     </>
   );

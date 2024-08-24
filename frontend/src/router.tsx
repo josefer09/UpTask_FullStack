@@ -16,11 +16,17 @@ import ProfileLayout from "./layouts/ProfileLayout";
 import ProfileView from "./views/profile/ProfileView";
 import ChangePasswordView from "./views/profile/ChangePasswordView";
 import NotFound from "./views/404/NotFound";
+import PublicLayout from "./layouts/PublicLayout";
+import HomePageView from "./views/public_view/HomePageView";
 
 export default function Router() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<HomePageView />}/>
+        </Route>
+
         <Route element={<AppLayout />}>
           <Route path="/projects" element={<DashboardView />} index />
           <Route path="/projects/create" element={<CreateProjectView />} />
