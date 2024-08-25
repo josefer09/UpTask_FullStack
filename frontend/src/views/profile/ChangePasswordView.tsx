@@ -50,7 +50,7 @@ export default function ChangePasswordView() {
               placeholder="Current Password"
               className="w-full p-3  border border-gray-200"
               {...register("current_password", {
-                required: "El password actual es obligatorio",
+                required: "Current Password is required",
               })}
             />
             {errors.current_password && (
@@ -69,10 +69,10 @@ export default function ChangePasswordView() {
               placeholder="New Password"
               className="w-full p-3  border border-gray-200"
               {...register("password", {
-                required: "El Nuevo Password es obligatorio",
+                required: "New Password is required",
                 minLength: {
                   value: 8,
-                  message: 'El Password debe ser mínimo de 8 caracteres'
+                  message: 'Password must be at least 8 characters long'
                 }
               })}
             />
@@ -92,8 +92,8 @@ export default function ChangePasswordView() {
               placeholder="Repeat Password"
               className="w-full p-3  border border-gray-200"
               {...register("password_confirmation", {
-                required: "Este campo es obligatorio",
-                validate: value => value === password || 'Los Passwords no son iguales'
+                required: "Password confirmation is required",
+                validate: value => value === password || 'Passwords do not match'
               })}
             />
             {errors.password_confirmation && (

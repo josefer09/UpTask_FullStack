@@ -1,12 +1,14 @@
 import { useForm } from "react-hook-form";
 import { UserRegistrationForm } from "@/types/index";
 import ErrorMessage from "@/components/ErrorMessage";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { createAccount } from "@/api/AuthApi";
 import { toast } from "react-toastify";
 
 export default function RegisterView() {
+
+  const navigate = useNavigate();
   
   const initialValues: UserRegistrationForm = {
     name: '',
@@ -25,8 +27,9 @@ export default function RegisterView() {
         return;
     },
     onSuccess: () => {
-        toast.success('Account Created');
+        toast.success("Account Created, we've sent you an email with instructions");
         reset();
+        navigate('/auth/login');
     }
   })
 

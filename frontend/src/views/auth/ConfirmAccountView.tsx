@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PinInput, PinInputField } from "@chakra-ui/pin-input";
 import { useState } from "react";
 import { ConfirmToken } from "@/types/index";
@@ -17,6 +17,8 @@ export default function ConfirmAccountView() {
     mutate(token);
   }
 
+  const navigate = useNavigate();
+
   const { mutate } = useMutation({
     mutationFn: confirmAccount,
     onError: (error) => {
@@ -24,6 +26,7 @@ export default function ConfirmAccountView() {
     },
     onSuccess: (data) => {
       toast.success(data?.msg);
+      navigate('/auth/login');
     }
   })
 
