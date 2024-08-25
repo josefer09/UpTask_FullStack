@@ -1,5 +1,6 @@
 # UP task
 
+
 ## Project Description
 
 This project is a frontend application for expenses planner, built using React and TypeScript, bundled with Vite. The goal of this project is to practice and learn about react.
