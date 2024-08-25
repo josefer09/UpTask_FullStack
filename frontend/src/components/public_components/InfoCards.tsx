@@ -22,8 +22,8 @@ export default function InfoCards() {
       const [selectedFeature, setSelectedFeature] = useState(features[0]);
   return (
     <>
-    <div className="flex flex-col items-center justify-start min-h-screen bg-gray-50 mt-2 p-4">
-            <h2 className="text-3xl font-bold text-gray-900 mt-12 mb-6 text-center">
+    <div className="flex flex-col items-center justify-start bg-gray-50 mt-2 p-4">
+            <h2 className="text-4xl font-bold text-gray-900 mt-12 mb-6 text-center">
                 Key Features of Uptask
             </h2>
         

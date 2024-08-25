@@ -1,5 +1,6 @@
 import Carousel from "@/components/public_components/Carousel";
 import InfoCards from "@/components/public_components/InfoCards";
+import ProfilePublic from "@/components/public_components/ProfilePublic";
 import { Link } from "react-router-dom";
 
 export default function HomePageView() {
@@ -19,7 +20,7 @@ export default function HomePageView() {
         </div>
 
         <div className=" mb-8 mt-2">
-          <Link to={'/auth/login'} className="bg-sky-500 text-white font-bold text-2xl px-6 py-3 rounded-lg shadow hover:bg-sky-600 transition-colors">Get Started</Link>
+          <Link to={'/auth/register'} className="bg-sky-500 text-white font-bold text-2xl px-6 py-3 rounded-lg shadow hover:bg-sky-600 transition-colors">Get Started</Link>
         </div>
 
         {/* Imagen debajo del párrafo */}
@@ -33,6 +34,7 @@ export default function HomePageView() {
 
         <Carousel />
         <InfoCards />
+        <ProfilePublic />
       </div>
     </>
   );
