@@ -12,6 +12,10 @@
 
 
 ## Get started with the demo: [Here](https://uptask-frontend-ten.vercel.app)✨
+You can use the following credentials to test the application.
+- user: alex@email.com | password: adminadmin
+- user: jamie@email.com | password: adminadmin
+- user: taylor@email.com | password: adminadmin
 
 ## Project Description
 
